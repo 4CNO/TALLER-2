@@ -1,7 +1,8 @@
 // controladores/region.controlador.js
 // Lógica de negocio para el recurso Región
+// FIX BUG-001: require('../TALLER #2/modelos/...') → require('../modelos/...')
 
-const regionModelo = require('../TALLER #2/modelos/region.modelo');
+const regionModelo = require('../modelos/region.modelo');
 const { ObjectId } = require('mongodb');
 
 /**
@@ -83,8 +84,10 @@ async function modificar(req, res) {
       return res.status(400).json({ ok: false, mensaje: 'El campo "nombreRegion" es requerido' });
     }
 
-    if ((datos.area !== undefined && isNaN(Number(datos.area))) ||
-        (datos.poblacion !== undefined && isNaN(Number(datos.poblacion)))) {
+    if (
+      (datos.area      !== undefined && isNaN(Number(datos.area))) ||
+      (datos.poblacion !== undefined && isNaN(Number(datos.poblacion)))
+    ) {
       return res.status(400).json({ ok: false, mensaje: '"area" y "poblacion" deben ser números' });
     }
 

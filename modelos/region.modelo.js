@@ -1,17 +1,19 @@
 // modelos/region.modelo.js
 // Acceso a datos de regiones (subdocumentos dentro de países)
+// FIX BUG-003: require('../bd') → require('./bd')
 
-const { obtenerBaseDatos } = require('../bd');
-const { ObjectId } = require('mongodb');
+const { obtenerBaseDatos } = require('./bd');
+const { ObjectId }         = require('mongodb');
 
 const COLECCION = 'paises';
 
 /**
  * Retorna todas las regiones de un país.
  * @param {string} idPais
+ * @returns {Promise<Array|null>}
  */
 async function obtenerPorPais(idPais) {
-  const db = obtenerBaseDatos();
+  const db   = obtenerBaseDatos();
   const pais = await db.collection(COLECCION).findOne(
     { _id: new ObjectId(idPais) },
     { projection: { regiones: 1, nombre: 1 } }
@@ -23,14 +25,15 @@ async function obtenerPorPais(idPais) {
  * Agrega una región a un país.
  * @param {string} idPais
  * @param {Object} region - { nombre, area, poblacion }
+ * @returns {Promise<{ resultado, region }>}
  */
 async function agregar(idPais, region) {
-  const db = obtenerBaseDatos();
+  const db    = obtenerBaseDatos();
   const nueva = {
-    nombre: region.nombre,
-    area: Number(region.area),
+    nombre:    region.nombre,
+    area:      Number(region.area),
     poblacion: Number(region.poblacion),
-    ciudades: [],
+    ciudades:  [],
   };
   const resultado = await db.collection(COLECCION).updateOne(
     { _id: new ObjectId(idPais) },
@@ -44,11 +47,12 @@ async function agregar(idPais, region) {
  * @param {string} idPais
  * @param {string} nombreRegion
  * @param {Object} datos - campos a actualizar
+ * @returns {Promise<UpdateResult>}
  */
 async function actualizar(idPais, nombreRegion, datos) {
-  const db = obtenerBaseDatos();
-
+  const db     = obtenerBaseDatos();
   const campos = {};
+
   if (datos.nuevoNombre !== undefined) campos['regiones.$.nombre']    = datos.nuevoNombre;
   if (datos.area        !== undefined) campos['regiones.$.area']      = Number(datos.area);
   if (datos.poblacion   !== undefined) campos['regiones.$.poblacion'] = Number(datos.poblacion);
@@ -63,6 +67,7 @@ async function actualizar(idPais, nombreRegion, datos) {
  * Elimina una región de un país por nombre.
  * @param {string} idPais
  * @param {string} nombreRegion
+ * @returns {Promise<UpdateResult>}
  */
 async function eliminar(idPais, nombreRegion) {
   const db = obtenerBaseDatos();

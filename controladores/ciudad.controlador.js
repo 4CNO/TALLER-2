@@ -1,7 +1,8 @@
 // controladores/ciudad.controlador.js
 // Lógica de negocio para el recurso Ciudad
+// FIX BUG-001: require('../TALLER #2/modelos/...') → require('../modelos/...')
 
-const ciudadModelo = require('../TALLER #2/modelos/ciudad.modelo');
+const ciudadModelo = require('../modelos/ciudad.modelo');
 const { ObjectId } = require('mongodb');
 
 /**
@@ -31,7 +32,7 @@ async function listar(req, res) {
 /**
  * POST /ciudades/agregar/:idPais/:nombreRegion
  * Agrega una ciudad a una región.
- * Body: { nombre, capitalRegion, capitalPais }
+ * Body: { nombre, capitalRegion?, capitalPais? }
  */
 async function agregar(req, res) {
   try {

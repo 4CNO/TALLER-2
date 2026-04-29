@@ -1,8 +1,9 @@
 // modelos/ciudad.modelo.js
 // Acceso a datos de ciudades (subdocumentos dentro de regiones)
+// FIX BUG-003: require('../bd') → require('./bd')
 
-const { obtenerBaseDatos } = require('../bd');
-const { ObjectId } = require('mongodb');
+const { obtenerBaseDatos } = require('./bd');
+const { ObjectId }         = require('mongodb');
 
 const COLECCION = 'paises';
 
@@ -10,9 +11,10 @@ const COLECCION = 'paises';
  * Retorna todas las ciudades de una región específica.
  * @param {string} idPais
  * @param {string} nombreRegion
+ * @returns {Promise<Array|null>}
  */
 async function obtenerPorRegion(idPais, nombreRegion) {
-  const db = obtenerBaseDatos();
+  const db        = obtenerBaseDatos();
   const resultado = await db.collection(COLECCION).findOne(
     { _id: new ObjectId(idPais), 'regiones.nombre': nombreRegion },
     { projection: { 'regiones.$': 1 } }
@@ -26,11 +28,12 @@ async function obtenerPorRegion(idPais, nombreRegion) {
  * @param {string} idPais
  * @param {string} nombreRegion
  * @param {Object} ciudad - { nombre, capitalRegion, capitalPais }
+ * @returns {Promise<{ resultado, ciudad }>}
  */
 async function agregar(idPais, nombreRegion, ciudad) {
-  const db = obtenerBaseDatos();
+  const db    = obtenerBaseDatos();
   const nueva = {
-    nombre: ciudad.nombre,
+    nombre:        ciudad.nombre,
     capitalRegion: Boolean(ciudad.capitalRegion),
     capitalPais:   Boolean(ciudad.capitalPais),
   };
@@ -43,20 +46,20 @@ async function agregar(idPais, nombreRegion, ciudad) {
 
 /**
  * Modifica una ciudad dentro de una región.
- * NOTA: MongoDB no permite filtros anidados con el operador $ en arrays de segundo nivel,
- * por eso se usa arrayFilters.
+ * Usa arrayFilters porque MongoDB no admite $ anidado en arrays de segundo nivel.
  * @param {string} idPais
  * @param {string} nombreRegion
  * @param {string} nombreCiudad
  * @param {Object} datos - campos a actualizar
+ * @returns {Promise<UpdateResult>}
  */
 async function actualizar(idPais, nombreRegion, nombreCiudad, datos) {
-  const db = obtenerBaseDatos();
-
+  const db     = obtenerBaseDatos();
   const campos = {};
-  if (datos.nuevoNombre    !== undefined) campos['regiones.$[reg].ciudades.$[ciu].nombre']       = datos.nuevoNombre;
-  if (datos.capitalRegion  !== undefined) campos['regiones.$[reg].ciudades.$[ciu].capitalRegion'] = Boolean(datos.capitalRegion);
-  if (datos.capitalPais    !== undefined) campos['regiones.$[reg].ciudades.$[ciu].capitalPais']   = Boolean(datos.capitalPais);
+
+  if (datos.nuevoNombre   !== undefined) campos['regiones.$[reg].ciudades.$[ciu].nombre']        = datos.nuevoNombre;
+  if (datos.capitalRegion !== undefined) campos['regiones.$[reg].ciudades.$[ciu].capitalRegion']  = Boolean(datos.capitalRegion);
+  if (datos.capitalPais   !== undefined) campos['regiones.$[reg].ciudades.$[ciu].capitalPais']    = Boolean(datos.capitalPais);
 
   return db.collection(COLECCION).updateOne(
     { _id: new ObjectId(idPais) },
@@ -75,6 +78,7 @@ async function actualizar(idPais, nombreRegion, nombreCiudad, datos) {
  * @param {string} idPais
  * @param {string} nombreRegion
  * @param {string} nombreCiudad
+ * @returns {Promise<UpdateResult>}
  */
 async function eliminar(idPais, nombreRegion, nombreCiudad) {
   const db = obtenerBaseDatos();

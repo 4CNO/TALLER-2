@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "División Política API",
+    "description": "Colección completa de pruebas para la API REST de división política mundial",
+    "_postman_id": "division-politica-api-v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",    "value": "http://localhost:3000" },
+    { "key": "id_pais",     "value": "" },
+    { "key": "nombre_region", "value": "Antioquia" },
+    { "key": "nombre_ciudad", "value": "Medellín" }
+  ],
+  "item": [
+    {
+      "name": "🌱 Raíz",
+      "item": [
+        {
+          "name": "GET / — Hola Mundo",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/", "host": ["{{base_url}}"], "path": [""] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Hola Mundo', () => pm.expect(pm.response.text()).to.equal('Hola Mundo'));"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "🌍 Países",
+      "item": [
+        {
+          "name": "GET /paises — Listar todos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/paises", "host": ["{{base_url}}"], "path": ["paises"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('ok=true', () => pm.expect(pm.response.json().ok).to.be.true);",
+              "pm.test('tiene total', () => pm.expect(pm.response.json()).to.have.property('total'));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST /paises/agregar — Crear país",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/paises/agregar", "host": ["{{base_url}}"], "path": ["paises","agregar"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Colombia\",\n  \"continente\": \"América del Sur\",\n  \"tipoRegion\": \"Departamentos\",\n  \"codigoAlfa2\": \"CO\",\n  \"codigoAlfa3\": \"COL\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.test('ok=true', () => pm.expect(body.ok).to.be.true);",
+              "pm.test('tiene _id', () => pm.expect(body.datos).to.have.property('_id'));",
+              "pm.collectionVariables.set('id_pais', body.datos._id.toString());",
+              "pm.test('regiones inicia vacío', () => pm.expect(body.datos.regiones).to.eql([]));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST /paises/agregar — Validación campos faltantes → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/paises/agregar", "host": ["{{base_url}}"], "path": ["paises","agregar"] },
+            "body": { "mode": "raw", "raw": "{ \"nombre\": \"Solo\" }" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('ok=false', () => pm.expect(pm.response.json().ok).to.be.false);"
+            ]}
+          }]
+        },
+        {
+          "name": "POST /paises/modificar — Actualizar nombre",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/paises/modificar", "host": ["{{base_url}}"], "path": ["paises","modificar"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{id_pais}}\",\n  \"nombre\": \"República de Colombia\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('ok=true', () => pm.expect(pm.response.json().ok).to.be.true);"
+            ]}
+          }]
+        },
+        {
+          "name": "POST /paises/modificar — Sin id → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/paises/modificar", "host": ["{{base_url}}"], "path": ["paises","modificar"] },
+            "body": { "mode": "raw", "raw": "{ \"nombre\": \"Sin Id\" }" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }]
+        },
+        {
+          "name": "DELETE /paises/:id — Eliminar país",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/paises/{{id_pais}}", "host": ["{{base_url}}"], "path": ["paises","{{id_pais}}"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('ok=true', () => pm.expect(pm.response.json().ok).to.be.true);"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "🗺️ Regiones",
+      "item": [
+        {
+          "name": "POST /regiones/agregar/:idPais — Crear región",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/regiones/agregar/{{id_pais}}", "host": ["{{base_url}}"], "path": ["regiones","agregar","{{id_pais}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Antioquia\",\n  \"area\": 63612,\n  \"poblacion\": 6800000\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.test('ciudades vacío', () => pm.expect(pm.response.json().datos.ciudades).to.eql([]));"
+            ]}
+          }]
+        },
+        {
+          "name": "GET /regiones/:idPais — Listar regiones",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/regiones/{{id_pais}}", "host": ["{{base_url}}"], "path": ["regiones","{{id_pais}}"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('tiene datos', () => pm.expect(pm.response.json().datos).to.be.an('array'));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST /regiones/modificar/:idPais — Modificar región",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/regiones/modificar/{{id_pais}}", "host": ["{{base_url}}"], "path": ["regiones","modificar","{{id_pais}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreRegion\": \"Antioquia\",\n  \"poblacion\": 7000000\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+          }]
+        },
+        {
+          "name": "DELETE /regiones/:idPais/:nombreRegion — Eliminar región",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/regiones/{{id_pais}}/{{nombre_region}}", "host": ["{{base_url}}"], "path": ["regiones","{{id_pais}}","{{nombre_region}}"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+          }]
+        }
+      ]
+    },
+    {
+      "name": "🏙️ Ciudades",
+      "item": [
+        {
+          "name": "POST /ciudades/agregar/:idPais/:region — Crear ciudad",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/ciudades/agregar/{{id_pais}}/{{nombre_region}}", "host": ["{{base_url}}"], "path": ["ciudades","agregar","{{id_pais}}","{{nombre_region}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Medellín\",\n  \"capitalRegion\": true,\n  \"capitalPais\": false\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] }
+          }]
+        },
+        {
+          "name": "GET /ciudades/:idPais/:region — Listar ciudades",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/ciudades/{{id_pais}}/{{nombre_region}}", "host": ["{{base_url}}"], "path": ["ciudades","{{id_pais}}","{{nombre_region}}"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+          }]
+        },
+        {
+          "name": "POST /ciudades/modificar/:idPais/:region — Modificar ciudad",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/ciudades/modificar/{{id_pais}}/{{nombre_region}}", "host": ["{{base_url}}"], "path": ["ciudades","modificar","{{id_pais}}","{{nombre_region}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCiudad\": \"Medellín\",\n  \"capitalPais\": true\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+          }]
+        },
+        {
+          "name": "DELETE /ciudades/:idPais/:region/:ciudad — Eliminar ciudad",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/ciudades/{{id_pais}}/{{nombre_region}}/{{nombre_ciudad}}", "host": ["{{base_url}}"], "path": ["ciudades","{{id_pais}}","{{nombre_region}}","{{nombre_ciudad}}"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+          }]
+        },
+        {
+          "name": "POST /ciudades/agregar — Sin nombre → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/ciudades/agregar/{{id_pais}}/{{nombre_region}}", "host": ["{{base_url}}"], "path": ["ciudades","agregar","{{id_pais}}","{{nombre_region}}"] },
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }]
+        }
+      ]
+    }
+  ]
+}

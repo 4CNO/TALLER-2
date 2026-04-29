@@ -1,7 +1,8 @@
 // controladores/pais.controlador.js
 // Lógica de negocio para el recurso País
+// FIX BUG-001: require('../TALLER #2/modelos/...') → require('../modelos/...')
 
-const paisModelo = require('../TALLER #2/modelos/pais.modelo');
+const paisModelo = require('../modelos/pais.modelo');
 const { ObjectId } = require('mongodb');
 
 /**
@@ -26,7 +27,6 @@ async function agregar(req, res) {
   try {
     const { nombre, continente, tipoRegion, codigoAlfa2, codigoAlfa3 } = req.body;
 
-    // Validación de campos requeridos
     if (!nombre || !continente || !tipoRegion || !codigoAlfa2 || !codigoAlfa3) {
       return res.status(400).json({
         ok: false,
