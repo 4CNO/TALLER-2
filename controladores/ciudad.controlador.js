@@ -1,7 +1,7 @@
 // controladores/ciudad.controlador.js
 // Lógica de negocio para el recurso Ciudad
 
-const ciudadModelo = require('../../modelos/ciudad.modelo');
+const ciudadModelo = require('../TALLER #2/modelos/ciudad.modelo');
 const { ObjectId } = require('mongodb');
 
 /**

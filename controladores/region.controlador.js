@@ -1,7 +1,7 @@
 // controladores/region.controlador.js
 // Lógica de negocio para el recurso Región
 
-const regionModelo = require('../../modelos/region.modelo');
+const regionModelo = require('../TALLER #2/modelos/region.modelo');
 const { ObjectId } = require('mongodb');
 
 /**
