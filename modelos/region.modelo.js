@@ -1,7 +1,7 @@
 // modelos/region.modelo.js
 // Acceso a datos de regiones (subdocumentos dentro de países)
 
-const { obtenerBaseDatos } = require('./bd');
+const { obtenerBaseDatos } = require('../bd');
 const { ObjectId } = require('mongodb');
 
 const COLECCION = 'paises';

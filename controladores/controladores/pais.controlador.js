@@ -1,7 +1,7 @@
 // controladores/pais.controlador.js
 // Lógica de negocio para el recurso País
 
-const paisModelo = require('../modelos/pais.modelo');
+const paisModelo = require('../TALLER #2/modelos/pais.modelo');
 const { ObjectId } = require('mongodb');
 
 /**

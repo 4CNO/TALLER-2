@@ -1,7 +1,7 @@
 // modelos/ciudad.modelo.js
 // Acceso a datos de ciudades (subdocumentos dentro de regiones)
 
-const { obtenerBaseDatos } = require('./bd');
+const { obtenerBaseDatos } = require('../bd');
 const { ObjectId } = require('mongodb');
 
 const COLECCION = 'paises';

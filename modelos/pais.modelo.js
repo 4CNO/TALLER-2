@@ -1,7 +1,7 @@
 // modelos/pais.modelo.js
 // Acceso a datos de la colección "paises"
 
-const { obtenerBaseDatos } = require('./bd');
+const { obtenerBaseDatos } = require('../bd');
 const { ObjectId } = require('mongodb');
 
 const COLECCION = 'paises';
