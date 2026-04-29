@@ -1,0 +1,17 @@
+{
+  "name": "division-politica-api",
+  "version": "1.0.0",
+  "description": "API REST para gestión de división política mundial",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
